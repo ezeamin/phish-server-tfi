@@ -6,6 +6,11 @@ export const registerRouter = express.Router();
 
 // GET ----------------------------
 registerRouter.get(
+  '/dni',
+  // Add certain validation, so not anyone can hit the endpoint
+  Register.GetController.getDni,
+);
+registerRouter.get(
   '/image',
   // Add certain validation, so not anyone can hit the endpoint
   Register.GetController.getImage,
@@ -16,11 +21,6 @@ registerRouter.post(
   '/person',
   // Add certain validation, so not anyone can hit the endpoint
   Register.PostController.postNewPerson,
-);
-registerRouter.post(
-  '/link',
-  // Add certain validation, so not anyone can hit the endpoint
-  Register.PostController.postLinkOpened,
 );
 registerRouter.post(
   '/form',

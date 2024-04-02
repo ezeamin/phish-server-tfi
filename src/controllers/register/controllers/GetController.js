@@ -8,6 +8,50 @@ const uuidRegex =
   /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
 
 export class GetController {
+  static async getDni(req, res) {
+    const { token } = req.query;
+
+    if (!token || !token.trim || !uuidRegex.test(token)) {
+      res.status(HttpStatus.BAD_REQUEST).json({ error: 'Token is required' });
+      return;
+    }
+
+    try {
+      const data = await prisma.data.findUnique({
+        where: {
+          id: token,
+        },
+        select: {
+          dni: true,
+        },
+      });
+
+      if (!data) {
+        res.status(HttpStatus.NOT_FOUND).json({ error: 'Token not found' });
+        return;
+      }
+
+      res.json({ dni: data.dni });
+    } catch (error) {
+      console.log('Error getting DNI:', error);
+      res.json(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    try {
+      const data = await prisma.data.update({
+        where: {
+          id: token,
+        },
+        data: {
+          linkopened: true,
+        },
+      });
+      console.log(`Link opened for person: ${data.email}`);
+    } catch (error) {
+      console.log('Error updating linkOpened:', error);
+    }
+  }
+
   static async getImage(req, res) {
     const { token } = req.query;
 

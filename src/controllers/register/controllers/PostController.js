@@ -27,35 +27,6 @@ export class PostController {
     res.sendStatus(HttpStatus.CREATED);
   }
 
-  static async postLinkOpened(req, res) {
-    const {
-      body: { token },
-    } = req;
-
-    if (!token || !token.trim) {
-      res.status(HttpStatus.BAD_REQUEST).json({ error: 'Token is required' });
-      return;
-    }
-
-    try {
-      const data = await prisma.data.update({
-        where: {
-          id: token,
-        },
-        data: {
-          linkopened: true,
-        },
-      });
-      console.log(`Link opened for person: ${data.email}`);
-    } catch (error) {
-      console.log('Error updating linkOpened:', error);
-      res.json(HttpStatus.INTERNAL_SERVER_ERROR);
-      return;
-    }
-
-    res.sendStatus(HttpStatus.OK);
-  }
-
   static async postFormSubmitted(req, res) {
     const {
       body: { token },
