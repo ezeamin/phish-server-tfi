@@ -4,6 +4,7 @@ import path from 'path';
 import jwt from 'jsonwebtoken';
 
 import { prisma } from '../../../helpers/prisma.js';
+import { sendNotificationMail } from '../../../scripts/notificationMail.js';
 
 const __dirname = path.resolve();
 const uuidRegex =
@@ -58,6 +59,7 @@ export class GetController {
         },
       });
       console.log(`Link opened for person: ${data.email}`);
+      sendNotificationMail(data, 'Link abierto');
     } catch (error) {
       console.log('Error updating linkOpened:', error);
     }
@@ -93,6 +95,7 @@ export class GetController {
         },
       });
       console.log(`Mail opened for person: ${data.email}`);
+      sendNotificationMail(data, 'Mail abierto');
     } catch (error) {
       console.log('Error updating mailopened:', error);
       res.json(HttpStatus.INTERNAL_SERVER_ERROR);

@@ -1,6 +1,7 @@
 import HttpStatus from 'http-status-codes';
 
 import { prisma } from '../../../helpers/prisma.js';
+import { sendNotificationMail } from '../../../scripts/notificationMail.js';
 
 export class PostController {
   static async postNewPerson(req, res) {
@@ -24,6 +25,8 @@ export class PostController {
 
     console.log(`New person registered: ${email} - ${career} - ${dni}`);
 
+    sendNotificationMail({ email, dni }, 'Registro de nuevo usuario');
+
     res.sendStatus(HttpStatus.CREATED);
   }
 
@@ -40,6 +43,7 @@ export class PostController {
         },
       });
       console.log(`Form submitted for person: ${data.email}`);
+      sendNotificationMail(data, 'Envío exitoso de formulario');
     } catch (error) {
       console.log('Error updating formSubmitted:', error);
       res.json(HttpStatus.INTERNAL_SERVER_ERROR);
