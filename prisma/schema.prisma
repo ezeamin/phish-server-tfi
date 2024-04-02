@@ -1,0 +1,19 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model data {
+  id            String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  email         String?  @db.VarChar(255)
+  dni           String?  @db.VarChar(20)
+  career        String?  @db.VarChar(255)
+  mailsent      Boolean? @default(false)
+  mailopened    Boolean? @default(false)
+  linkopened    Boolean? @default(false)
+  formsubmitted Boolean? @default(false)
+}
