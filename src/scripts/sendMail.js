@@ -1,17 +1,14 @@
 import nodemailer from 'nodemailer';
 import { prisma } from '../helpers/prisma.js';
 
-/**
- * create a function that uses nodemailer to send mails to users in a db. This mail comes from a template to be specified. users from the db are retrieved using prisma client (import {prisma} from "../helpers/prisma.js"), table "data", column "email". Create this logic inside a function, because it will then be called one to ten at a time, leaving time periods in between, to avoid being blocked from the smtp server
- */
-
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
   port: process.env.EMAIL_PORT,
-  secure: true,
-  tls: {
-    rejectUnauthorized: false,
-  },
+  // secure: true,
+  // tls: {
+  //   rejectUnauthorized: false,
+  //   ciphers: 'SSLv3',
+  // },
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
@@ -48,22 +45,44 @@ const generateHtml = (user) => `
 `;
 
 async function sendEmails() {
+  // Get "email" argument from the command line
+  const emailArg = process.argv[2];
+  let email = '';
+  if (emailArg) {
+    // eslint-disable-next-line prefer-destructuring
+    email = emailArg.split('=')[1];
+
+    // check if the email is valid
+    if (!email.includes('@') || !email.includes('.')) {
+      console.error('Invalid email address.');
+      return;
+    }
+
+    console.log('Sending to email:', email);
+  }
+
   try {
     // Retrieve users from the database
-    const users = await prisma.data.findMany({
-      // where: { mailsent: false }, TODO -> Uncomment this line to send only to users that haven't received the email yet
-    });
+    const users = await prisma.data.findMany(
+      email
+        ? { where: { email } }
+        : {
+            // where: { mailsent: false }, TODO -> Uncomment this line to send only to users that haven't received the email yet
+          },
+    );
+
+    console.log(`People found: ${users.length}`);
 
     users.forEach(async (user) => {
       // Create wait time between emails
-      const waitTime = Math.floor(Math.random() * 10000);
+      const waitTime = email ? 0 : Math.floor(Math.random() * 10000);
       console.log(`Wait time for this email: ${(waitTime / 1000).toFixed(1)}s`);
 
       // Customize the email template here
       const mailOptions = {
         from: {
           name: 'Soporte Virtual (vía SEO)',
-          address: 'noreply@seo-unsta.com',
+          address: process.env.EMAIL_USER,
         },
         to: user.email,
         subject:
