@@ -20,7 +20,7 @@ const transporter = nodemailer.createTransport({
 
 const generateHtml = (user) => `
 <main style="font-family: Arial">
-  <p>Hola</p>
+  <p>Hola.</p>
 
   <p>
     Este es un comunicado para solicitarle que reestablezca la contraseña de su cuenta '${user.dni}' en
