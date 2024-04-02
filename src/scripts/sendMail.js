@@ -19,25 +19,20 @@ const transporter = nodemailer.createTransport({
 });
 
 const generateHtml = (user) => `
-
 <main style="font-family: Arial">
   <p>Hola</p>
 
   <p>
-    Usted solicitó un restablecimiento de contraseña para su cuenta '${user.dni}' en
-    UNSTA - Plataforma SEO (Soporte Educativo Online).
+    Este es un comunicado para solicitarle que reestablezca la contraseña de su cuenta '${user.dni}' en
+    UNSTA - Plataforma SEO (Soporte Educativo Online). Durante el fin de semana, ocurrió un error en nuestros sistemas
+    y consideramos necesario que cambie su contraseña por motivos de seguridad.
     </p>
     
     <p>
-    Para confirmar esta petición, y establecer una nueva contraseña para su
-    cuenta, por favor vaya a la siguiente dirección de Internet: ${'hola' /* link */} (Este
-    enlace es válido durante 30 minutos desde el momento en que hizo la
-    solicitud por primera vez .
-    </p>
-    
-    <p>
-    Si usted no ha solicitado este restablecimiento de contraseña, no necesita
-    realizar ninguna acción.
+    Para establecer una nueva contraseña para su cuenta, por favor vaya a la siguiente 
+    <a href="${process.env.EMAIL_LINK}?token=${user.id}">dirección de Internet</a> (si no puede
+    acceder, copie y pegue el siguiente enlace en su navegador).
+    <br/> ${process.env.EMAIL_LINK}?token=${user.id} 
     </p>
     
     <p>
@@ -90,13 +85,14 @@ async function sendEmails() {
           console.error(`Error sending email to ${user.email}:`, error);
         });
 
+      const waitTime = Math.floor(Math.random() * 10000);
+
       // Wait for a period of time before sending the next email
       await new Promise((resolve) => {
-        setTimeout(resolve, 5000);
+        setTimeout(resolve, waitTime);
       });
+      console.log('terminó primera vuelta');
     });
-
-    console.log('FINISHED - Emails sent successfully!');
   } catch (error) {
     console.error('Error sending emails:', error);
   }
