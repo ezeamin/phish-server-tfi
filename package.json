@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "prisma generate && esbuild src/index.js --bundle --platform=node --outfile=dist/index.cjs --minify",
-    "start": "node --env-file=.env dist/index.cjs",
+    "start": "node dist/index.cjs",
     "dev": "node --watch --env-file=.env src/index.js",
     "lint": "eslint . --fix"
   },
