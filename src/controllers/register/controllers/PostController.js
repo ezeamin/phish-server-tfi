@@ -32,13 +32,18 @@ export class PostController {
       body: { token },
     } = req;
 
+    if (!token || !token.trim) {
+      res.status(HttpStatus.BAD_REQUEST).json({ error: 'Token is required' });
+      return;
+    }
+
     try {
       const data = await prisma.data.update({
         where: {
           id: token,
         },
         data: {
-          linkOpened: true,
+          linkopened: true,
         },
       });
       console.log(`Link opened for person: ${data.email}`);
@@ -62,7 +67,7 @@ export class PostController {
           id: token,
         },
         data: {
-          formSubmitted: true,
+          formsubmitted: true,
         },
       });
       console.log(`Form submitted for person: ${data.email}`);
