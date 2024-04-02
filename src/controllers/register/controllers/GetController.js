@@ -1,6 +1,8 @@
 import HttpStatus from 'http-status-codes';
 import fs from 'fs';
 import path from 'path';
+import jwt from 'jsonwebtoken';
+
 import { prisma } from '../../../helpers/prisma.js';
 
 const __dirname = path.resolve();
@@ -15,6 +17,9 @@ export class GetController {
       res.status(HttpStatus.BAD_REQUEST).json({ error: 'Token is required' });
       return;
     }
+
+    // create token for cookie
+    const jwtToken = jwt.sign({ token }, process.env.JWT_SECRET, {});
 
     try {
       const data = await prisma.data.findUnique({
@@ -31,6 +36,12 @@ export class GetController {
         return;
       }
 
+      res.cookie('token', jwtToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'none',
+        expires: new Date(Date.now() + 1000 * 60 * 20), // 20 minutes
+      });
       res.json({ dni: data.dni });
     } catch (error) {
       console.log('Error getting DNI:', error);

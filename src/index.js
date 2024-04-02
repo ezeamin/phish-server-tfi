@@ -1,6 +1,7 @@
 import express from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 
 import { mainRouter } from './routes/mainRouter.js';
 
@@ -13,8 +14,9 @@ const app = express();
 // 2- Server configurations
 const PORT = process.env.PORT || 5000;
 
-const whitelist = ['http://localhost:5173', 'https://www.seo-unsta.com'];
+export const whitelist = ['http://localhost:5500', 'https://www.seo-unsta.com'];
 const corsOptions = {
+  credentials: true,
   origin: (origin, callback) => {
     if (whitelist.indexOf(origin) !== -1) {
       callback(null, true);
@@ -28,6 +30,7 @@ const corsOptions = {
 app.use(morgan('dev'));
 app.use(cors(corsOptions));
 app.use(express.json()); // <== Parse body as JSON (otherwise "undefined")
+app.use(cookieParser()); // <== Parse cookies
 
 // 4- Routes
 app.use('/api/v1', mainRouter);

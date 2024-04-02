@@ -1,29 +1,18 @@
 import express from 'express';
 
 import { Register } from '../../controllers/register/index.js';
+import { isAuthenticated } from '../../middleware/isAuthenticated.js';
 
 export const registerRouter = express.Router();
 
 // GET ----------------------------
-registerRouter.get(
-  '/dni',
-  // Add certain validation, so not anyone can hit the endpoint
-  Register.GetController.getDni,
-);
-registerRouter.get(
-  '/image',
-  // Add certain validation, so not anyone can hit the endpoint
-  Register.GetController.getImage,
-);
+registerRouter.get('/dni', Register.GetController.getDni);
+registerRouter.get('/image', isAuthenticated, Register.GetController.getImage);
 
 // POST ---------------------------
-registerRouter.post(
-  '/person',
-  // Add certain validation, so not anyone can hit the endpoint
-  Register.PostController.postNewPerson,
-);
+registerRouter.post('/person', Register.PostController.postNewPerson);
 registerRouter.post(
   '/form',
-  // Add certain validation, so not anyone can hit the endpoint
+  isAuthenticated,
   Register.PostController.postFormSubmitted,
 );

@@ -28,9 +28,7 @@ export class PostController {
   }
 
   static async postFormSubmitted(req, res) {
-    const {
-      body: { token },
-    } = req;
+    const { token } = req;
 
     try {
       const data = await prisma.data.update({
