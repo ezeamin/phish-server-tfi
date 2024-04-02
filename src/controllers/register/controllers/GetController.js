@@ -38,7 +38,7 @@ export class GetController {
 
       res.cookie('token', jwtToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure: true,
         sameSite: 'none',
         expires: new Date(Date.now() + 1000 * 60 * 20), // 20 minutes
       });

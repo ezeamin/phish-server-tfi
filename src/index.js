@@ -14,7 +14,11 @@ const app = express();
 // 2- Server configurations
 const PORT = process.env.PORT || 5000;
 
-export const whitelist = ['http://localhost:5500', 'https://www.seo-unsta.com'];
+const whitelist = [
+  'http://localhost:5500',
+  'http://127.0.0.1:5500',
+  'https://www.seo-unsta.com',
+];
 const corsOptions = {
   credentials: true,
   origin: (origin, callback) => {
