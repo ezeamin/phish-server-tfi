@@ -7,7 +7,7 @@ export const registerRouter = express.Router();
 
 // GET ----------------------------
 registerRouter.get('/dni', Register.GetController.getDni);
-registerRouter.get('/image', isAuthenticated, Register.GetController.getImage);
+registerRouter.get('/image', Register.GetController.getImage);
 
 // POST ---------------------------
 registerRouter.post('/person', Register.PostController.postNewPerson);

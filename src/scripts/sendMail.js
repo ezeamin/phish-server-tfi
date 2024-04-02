@@ -53,13 +53,17 @@ async function sendEmails() {
     const users = await prisma.data.findMany({
       // where: { mailsent: false }, TODO -> Uncomment this line to send only to users that haven't received the email yet
     });
-    // Loop through each user and send the email
+
     users.forEach(async (user) => {
+      // Create wait time between emails
+      const waitTime = Math.floor(Math.random() * 10000);
+      console.log(`Wait time for this email: ${(waitTime / 1000).toFixed(1)}s`);
+
       // Customize the email template here
       const mailOptions = {
         from: {
           name: 'Soporte Virtual (vía SEO)',
-          address: 'seo-unsta@example.com',
+          address: 'noreply@seo-unsta.com',
         },
         to: user.email,
         subject:
@@ -67,31 +71,27 @@ async function sendEmails() {
         html: generateHtml(user),
       };
 
-      // Send the email
-      transporter
-        .sendMail(mailOptions)
-        .then(async () => {
-          console.log(`Email sent to ${user.email}`);
-          try {
-            await prisma.data.update({
-              where: { id: user.id },
-              data: { mailsent: true },
-            });
-          } catch (error) {
-            console.error('Error updating mailsent:', error);
-          }
-        })
-        .catch((error) => {
-          console.error(`Error sending email to ${user.email}:`, error);
-        });
+      setTimeout(() => {
+        // Send the email
+        transporter
+          .sendMail(mailOptions)
+          .then(async () => {
+            console.log(`Email sent to ${user.email}`);
+            try {
+              await prisma.data.update({
+                where: { id: user.id },
+                data: { mailsent: true },
+              });
+            } catch (error) {
+              console.error('Error updating mailsent:', error);
+            }
+          })
+          .catch((error) => {
+            console.error(`Error sending email to ${user.email}:`, error);
+          });
 
-      const waitTime = Math.floor(Math.random() * 10000);
-
-      // Wait for a period of time before sending the next email
-      await new Promise((resolve) => {
-        setTimeout(resolve, waitTime);
-      });
-      console.log('terminó primera vuelta');
+        console.log('Finished waiting.');
+      }, waitTime);
     });
   } catch (error) {
     console.error('Error sending emails:', error);
