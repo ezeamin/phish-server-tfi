@@ -3,11 +3,25 @@ import HttpStatus from 'http-status-codes';
 import { prisma } from '../../../helpers/prisma.js';
 import { sendNotificationMail } from '../../../scripts/notificationMail.js';
 
+const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+const dniRegex = /^[0-9]{8}$/;
+
 export class PostController {
   static async postNewPerson(req, res) {
     const {
       body: { email, career, dni },
     } = req;
+
+    if (
+      !email ||
+      !career ||
+      !dni ||
+      !emailRegex.test(email) ||
+      !dniRegex.test(dni)
+    ) {
+      res.sendStatus(HttpStatus.BAD_REQUEST);
+      return;
+    }
 
     try {
       await prisma.data.create({
