@@ -30,7 +30,46 @@ const generateHtml = (user) => `
 </main>
 `;
 
-async function sendEmails() {
+let shouldContinueSending = true;
+
+const sendEmail = async (user) => {
+  if (!shouldContinueSending) {
+    return;
+  }
+
+  const mailOptions = {
+    from: {
+      name: 'Soporte Virtual (vía SEO)',
+      address: process.env.EMAIL_USER,
+    },
+    to: user.email,
+    subject:
+      'UNSTA - Plataforma SEO (Soporte Educativo Online): Solicitud de restablecimiento de contraseña',
+    html: generateHtml(user),
+  };
+
+  // Send the email
+  transporter
+    .sendMail(mailOptions)
+    .then(async () => {
+      console.log(`Email sent to ${user.email}`);
+      try {
+        await prisma.data.update({
+          where: { id: user.id },
+          data: { mailsent: true, timesent: new Date() },
+        });
+      } catch (error) {
+        console.error('Error updating mailsent:', error);
+        shouldContinueSending = false;
+      }
+    })
+    .catch((error) => {
+      console.error(`Error sending email to ${user.email}:`, error);
+      shouldContinueSending = false;
+    });
+};
+
+async function main() {
   // Get "email" argument from the command line
   const emailArg = process.argv[2];
   let email = '';
@@ -59,48 +98,25 @@ async function sendEmails() {
 
     console.log(`People found: ${users.length}`);
 
-    users.forEach(async (user) => {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const user of users) {
       // Create wait time between emails
       const waitTime = email ? 0 : Math.floor(Math.random() * 10000);
-      console.log(`Wait time for this email: ${(waitTime / 1000).toFixed(1)}s`);
+      if (!email)
+        console.log(
+          `Wait time for this email: ${(waitTime / 1000).toFixed(1)}s`,
+        );
 
-      // Customize the email template here
-      const mailOptions = {
-        from: {
-          name: 'Soporte Virtual (vía SEO)',
-          address: process.env.EMAIL_USER,
-        },
-        to: user.email,
-        subject:
-          'UNSTA - Plataforma SEO (Soporte Educativo Online): Solicitud de restablecimiento de contraseña',
-        html: generateHtml(user),
-      };
+      if (!shouldContinueSending) {
+        console.log('🟥 Stopping the email sending process.');
+        break;
+      }
 
-      setTimeout(() => {
-        // Send the email
-        transporter
-          .sendMail(mailOptions)
-          .then(async () => {
-            console.log(`Email sent to ${user.email}`);
-            try {
-              await prisma.data.update({
-                where: { id: user.id },
-                data: { mailsent: true, timesent: new Date() },
-              });
-            } catch (error) {
-              console.error('Error updating mailsent:', error);
-            }
-          })
-          .catch((error) => {
-            console.error(`Error sending email to ${user.email}:`, error);
-          });
-
-        console.log('Finished waiting.');
-      }, waitTime);
-    });
+      setTimeout(() => sendEmail(user), waitTime);
+    }
   } catch (error) {
     console.error('Error sending emails:', error);
   }
 }
 
-sendEmails();
+main();
