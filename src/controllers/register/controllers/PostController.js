@@ -40,6 +40,7 @@ export class PostController {
         },
         data: {
           formsubmitted: true,
+          timesubmitted: new Date(),
         },
       });
       console.log(`Form submitted for person: ${data.email}`);

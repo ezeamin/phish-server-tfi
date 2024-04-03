@@ -56,6 +56,7 @@ export class GetController {
         },
         data: {
           linkopened: true,
+          timeopenedlink: new Date(),
         },
       });
       console.log(`Link opened for person: ${data.email}`);
@@ -92,6 +93,7 @@ export class GetController {
         },
         data: {
           mailopened: true,
+          timeread: new Date(),
         },
       });
       console.log(`Mail opened for person: ${data.email}`);

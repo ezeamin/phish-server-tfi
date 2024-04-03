@@ -85,7 +85,7 @@ async function sendEmails() {
             try {
               await prisma.data.update({
                 where: { id: user.id },
-                data: { mailsent: true },
+                data: { mailsent: true, timesent: new Date() },
               });
             } catch (error) {
               console.error('Error updating mailsent:', error);
