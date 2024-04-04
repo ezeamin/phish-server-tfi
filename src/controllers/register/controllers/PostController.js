@@ -39,7 +39,7 @@ export class PostController {
 
     console.log(`New person registered: ${email} - ${career} - ${dni}`);
 
-    sendNotificationMail({ email, dni }, 'Registro de nuevo usuario');
+    // sendNotificationMail({ email, dni }, 'Registro de nuevo usuario');
 
     res.sendStatus(HttpStatus.CREATED);
   }
