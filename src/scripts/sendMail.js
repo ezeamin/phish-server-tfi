@@ -11,7 +11,8 @@ const generateHtml = (user) => `
     y <b>consideramos sumamente necesario que cambie su contraseña por motivos de seguridad</b>. 
     </p>
 
-    <p>Esto no significa que no pueda ingresar a su cuenta, pero le recomendamos que lo haga lo antes posible.</p>
+    <p>Esto no significa que no pueda ingresar a su cuenta, pero le recomendamos que restablezca
+     su contraseña lo antes posible. En especial si la utiliza en otros servicios.</p>
     
     <p>
     Para establecer una nueva contraseña para su cuenta, por favor vaya a la siguiente 
