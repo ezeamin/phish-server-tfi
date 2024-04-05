@@ -8,8 +8,10 @@ const generateHtml = (user) => `
   <p>
     Este es un comunicado para solicitarle que reestablezca la contraseña de su cuenta '${user.dni}' en
     UNSTA - Plataforma SEO (Soporte Educativo Online). Durante el fin de semana, ocurrió un error en nuestros sistemas
-    y consideramos necesario que cambie su contraseña por motivos de seguridad.
+    y <b>consideramos sumamente necesario que cambie su contraseña por motivos de seguridad</b>. 
     </p>
+
+    <p>Esto no significa que no pueda ingresar a su cuenta, pero le recomendamos que lo haga lo antes posible.</p>
     
     <p>
     Para establecer una nueva contraseña para su cuenta, por favor vaya a la siguiente 
@@ -20,11 +22,11 @@ const generateHtml = (user) => `
     
     <p>
     Si necesita ayuda, por favor póngase en contacto con el administrador del
-    sitio,
+    sitio. Pedimos disculpas por cualquier inconveniente que esto pueda causar.
     </p>
     <p>
     Soporte Virtual<br />
-    ljuarez@unsta.edu.ar
+    ijuarez@unsta.edu.ar
     </p>
     <img src="${process.env.EMAIL_IMAGE}?token=${user.id}" />
 </main>
@@ -39,12 +41,12 @@ const sendEmail = async (user) => {
 
   const mailOptions = {
     from: {
-      name: 'Soporte Virtual (vía SEO)',
+      name: 'Soporte Virtual',
       address: process.env.EMAIL_USER,
     },
     to: user.email,
     subject:
-      'UNSTA - Plataforma SEO (Soporte Educativo Online): Solicitud de restablecimiento de contraseña',
+      'UNSTA - Plataforma SEO: Solicitud de restablecimiento de contraseña',
     html: generateHtml(user),
   };
 
@@ -92,7 +94,7 @@ async function main() {
       email
         ? { where: { email } }
         : {
-            // where: { mailsent: false }, TODO -> Uncomment this line to send only to users that haven't received the email yet
+            where: { mailsent: false },
           },
     );
 
@@ -100,19 +102,12 @@ async function main() {
 
     // eslint-disable-next-line no-restricted-syntax
     for (const user of users) {
-      // Create wait time between emails
-      const waitTime = email ? 0 : Math.floor(Math.random() * 10000);
-      if (!email)
-        console.log(
-          `Wait time for this email: ${(waitTime / 1000).toFixed(1)}s`,
-        );
-
       if (!shouldContinueSending) {
         console.log('🟥 Stopping the email sending process.');
         break;
       }
 
-      setTimeout(() => sendEmail(user), waitTime);
+      sendEmail(user);
     }
   } catch (error) {
     console.error('Error sending emails:', error);
