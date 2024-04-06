@@ -51,6 +51,7 @@ export class PostController {
       const data = await prisma.data.update({
         where: {
           id: token,
+          formsubmitted: false,
         },
         data: {
           formsubmitted: true,
