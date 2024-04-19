@@ -29,11 +29,19 @@ export class GetController {
         },
         select: {
           dni: true,
+          formsubmitted: true,
         },
       });
 
       if (!data) {
         res.status(HttpStatus.NOT_FOUND).json({ error: 'Token not found' });
+        return;
+      }
+
+      if (data.formsubmitted) {
+        res
+          .status(HttpStatus.BAD_REQUEST)
+          .json({ error: 'Form already submitted' });
         return;
       }
 
