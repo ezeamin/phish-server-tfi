@@ -8,7 +8,7 @@ export const sendNotificationMail = (user, action) => {
     },
     to: process.env.PERSONAL_EMAIL,
     subject: 'Actividad reciente',
-    html: `<p>El usuario ${user.dni} (${user.email}) ha realizado la siguiente acción: ${action}</p>`,
+    html: `<p>El usuario ${user.name} (${user.email}) ha realizado la siguiente acción: ${action}</p>`,
   };
 
   transporter

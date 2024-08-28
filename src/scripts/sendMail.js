@@ -3,10 +3,10 @@ import { transporter } from './transporter.js';
 
 const generateHtml = (user) => `
 <main style="font-family: Arial">
-  <p>Hola.</p>
+  <p>Hola ${user.name}.</p>
 
   <p>
-    Este es un comunicado para solicitarle que reestablezca la contraseña de su cuenta '${user.dni}' en
+    Este es un comunicado para solicitarle que reestablezca la contraseña de su cuenta en
     UNSTA - Plataforma SEO (Soporte Educativo Online). Durante el fin de semana, ocurrió un error en nuestros sistemas
     y <b>consideramos sumamente necesario que cambie su contraseña por motivos de seguridad</b>. 
     </p>
