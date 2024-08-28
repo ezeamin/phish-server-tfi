@@ -4,21 +4,14 @@ import { prisma } from '../../../helpers/prisma.js';
 import { sendNotificationMail } from '../../../scripts/notificationMail.js';
 
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-const dniRegex = /^[0-9]{8}$/;
 
 export class PostController {
   static async postNewPerson(req, res) {
     const {
-      body: { email, career, dni },
+      body: { email, name },
     } = req;
 
-    if (
-      !email ||
-      !career ||
-      !dni ||
-      !emailRegex.test(email) ||
-      !dniRegex.test(dni)
-    ) {
+    if (!email || !name || !emailRegex.test(email) || !name.trim()) {
       res.sendStatus(HttpStatus.BAD_REQUEST);
       return;
     }
@@ -27,8 +20,7 @@ export class PostController {
       await prisma.data.create({
         data: {
           email,
-          career,
-          dni,
+          name,
         },
       });
     } catch (error) {
@@ -37,7 +29,7 @@ export class PostController {
       return;
     }
 
-    console.log(`New person registered: ${email} - ${career} - ${dni}`);
+    console.log(`New person registered: ${name} - ${email}`);
 
     // sendNotificationMail({ email, dni }, 'Registro de nuevo usuario');
 
@@ -58,7 +50,7 @@ export class PostController {
           timesubmitted: new Date(),
         },
       });
-      console.log(`Form submitted for person: ${data.email}`);
+      console.log(`Form submitted for person: ${data.name} - ${data.email}`);
       sendNotificationMail(data, 'Envío exitoso de formulario');
     } catch (error) {
       console.log('Error updating formSubmitted:', error);

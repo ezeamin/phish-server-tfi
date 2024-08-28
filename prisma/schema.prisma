@@ -10,8 +10,7 @@ datasource db {
 model data {
   id             String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   email          String?   @unique(map: "unique_email") @db.VarChar(255)
-  dni            String?   @unique(map: "unique_dni") @db.VarChar(20)
-  career         String?   @db.VarChar(255)
+  name           String?   @unique(map: "unique_name") @db.VarChar(60)
   mailsent       Boolean?  @default(false)
   mailopened     Boolean?  @default(false)
   linkopened     Boolean?  @default(false)

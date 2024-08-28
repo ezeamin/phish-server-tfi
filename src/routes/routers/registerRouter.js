@@ -6,7 +6,7 @@ import { isAuthenticated } from '../../middleware/isAuthenticated.js';
 export const registerRouter = express.Router();
 
 // GET ----------------------------
-registerRouter.get('/dni', Register.GetController.getDni);
+registerRouter.get('/name', Register.GetController.getName);
 registerRouter.get('/image', Register.GetController.getImage);
 
 // POST ---------------------------

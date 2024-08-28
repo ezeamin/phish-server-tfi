@@ -11,7 +11,7 @@ const uuidRegex =
   /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
 
 export class GetController {
-  static async getDni(req, res) {
+  static async getName(req, res) {
     const { token } = req.query;
 
     if (!token || !token.trim || !uuidRegex.test(token)) {
@@ -28,7 +28,7 @@ export class GetController {
           id: token,
         },
         select: {
-          dni: true,
+          name: true,
           formsubmitted: true,
         },
       });
@@ -51,9 +51,9 @@ export class GetController {
         sameSite: 'none',
         expires: new Date(Date.now() + 1000 * 60 * 20), // 20 minutes
       });
-      res.json({ dni: data.dni });
+      res.json({ name: data.name });
     } catch (error) {
-      console.log('Error getting DNI:', error);
+      console.log('Error getting NAME:', error);
       res.json(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
