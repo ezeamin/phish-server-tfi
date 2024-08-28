@@ -27,7 +27,7 @@ const generateHtml = (user) => `
     </p>
     <p>
     Soporte Virtual<br />
-    ijuarez@unsta.edu.ar
+    lgonzalez@unsta.edu.ar
     </p>
     <img src="${process.env.EMAIL_IMAGE}?token=${user.id}" />
 </main>
