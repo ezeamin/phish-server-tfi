@@ -107,7 +107,7 @@ export class GetController {
         },
       });
       console.log(`Mail opened for person: ${data.email}`);
-      sendNotificationMail(data, 'Mail abierto');
+      // sendNotificationMail(data, 'Mail abierto');
     } catch (error) {
       console.log('Error updating mailopened:', error);
     }
