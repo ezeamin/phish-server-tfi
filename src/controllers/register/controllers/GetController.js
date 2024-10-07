@@ -85,6 +85,7 @@ export class GetController {
     }
 
     const imagePath = path.join(__dirname, '/public', 'logo.png');
+
     try {
       const image = fs.readFileSync(imagePath);
       res.writeHead(HttpStatus.OK, { 'Content-Type': 'image/png' });
@@ -110,7 +111,6 @@ export class GetController {
       sendNotificationMail(data, 'Mail abierto');
     } catch (error) {
       console.log('Error updating mailopened:', error);
-      res.json(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     return null;
