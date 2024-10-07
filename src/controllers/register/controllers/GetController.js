@@ -100,7 +100,6 @@ export class GetController {
       const data = await prisma.data.update({
         where: {
           id: token,
-          mailopened: false,
         },
         data: {
           mailopened: true,
