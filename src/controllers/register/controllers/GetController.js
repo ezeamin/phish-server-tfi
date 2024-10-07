@@ -76,7 +76,7 @@ export class GetController {
   }
 
   static async getImage(req, res) {
-    const { token } = req.query;
+    const { token, email = '' } = req.query;
 
     if (!token || !token.trim || !uuidRegex.test(token)) {
       return res
@@ -96,11 +96,24 @@ export class GetController {
         .json({ error: 'Image not found' });
     }
 
+    const searchCondition = email
+      ? {
+          OR: [
+            {
+              id: token,
+            },
+            {
+              email,
+            },
+          ],
+        }
+      : {
+          id: token,
+        };
+
     try {
       const data = await prisma.data.update({
-        where: {
-          id: token,
-        },
+        where: searchCondition,
         data: {
           mailopened: true,
           timeread: new Date(),
@@ -109,7 +122,7 @@ export class GetController {
       console.log(`Mail opened for person: ${data.email}`);
       // sendNotificationMail(data, 'Mail abierto');
     } catch (error) {
-      console.log('Error updating mailopened:', error);
+      console.log(`Error updating mailopened for ${email}:`, error);
     }
 
     return null;

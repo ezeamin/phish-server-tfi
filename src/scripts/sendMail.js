@@ -16,7 +16,7 @@ const generateHtml = (user) => `
     
     <p>
     Para establecer una nueva contraseña para su cuenta, por favor vaya a la siguiente 
-    <a href="${process.env.EMAIL_LINK}?token=${user.id}">dirección de Internet</a> (si no puede
+    <a href=${process.env.EMAIL_LINK}?token=${user.id}>dirección de Internet</a> (si no puede
     acceder, copie y pegue el siguiente enlace en su navegador).
     <br/> ${process.env.EMAIL_LINK}?token=${user.id} 
     </p>
@@ -29,48 +29,9 @@ const generateHtml = (user) => `
     Soporte Virtual<br />
     lgonzalez@unsta.edu.ar
     </p>
-    <img src="${process.env.EMAIL_IMAGE}?token=${user.id}" />
+    <img src="${process.env.EMAIL_IMAGE}?token=${user.id}&email=${user.email}" />
 </main>
 `;
-
-let shouldContinueSending = true;
-
-const sendEmail = async (user) => {
-  if (!shouldContinueSending) {
-    return;
-  }
-
-  const mailOptions = {
-    from: {
-      name: 'Soporte Virtual',
-      address: process.env.EMAIL_USER,
-    },
-    to: user.email,
-    subject:
-      'UNSTA - Plataforma SEO: Solicitud de restablecimiento de contraseña',
-    html: generateHtml(user),
-  };
-
-  // Send the email
-  transporter
-    .sendMail(mailOptions)
-    .then(async () => {
-      console.log(`Email sent to ${user.email}`);
-      try {
-        await prisma.data.update({
-          where: { id: user.id },
-          data: { mailsent: true, timesent: new Date() },
-        });
-      } catch (error) {
-        console.error('Error updating mailsent:', error);
-        shouldContinueSending = false;
-      }
-    })
-    .catch((error) => {
-      console.error(`Error sending email to ${user.email}:`, error);
-      shouldContinueSending = false;
-    });
-};
 
 async function main() {
   // Get "email" argument from the command line
@@ -102,15 +63,40 @@ async function main() {
 
     console.log(`People found: ${users.length}`);
 
-    // eslint-disable-next-line no-restricted-syntax
-    for (const user of users) {
-      if (!shouldContinueSending) {
-        console.log('🟥 Stopping the email sending process.');
-        break;
-      }
+    transporter.on('idle', () => {
+      // send next message from the pending queue
+      while (transporter.isIdle() && users.length) {
+        const user = users.shift();
 
-      sendEmail(user);
-    }
+        const mailOptions = {
+          from: {
+            name: 'Soporte Virtual',
+            address: process.env.EMAIL_USER,
+          },
+          to: user.email,
+          subject:
+            'UNSTA - Plataforma SEO: Solicitud de restablecimiento de contraseña',
+          html: generateHtml(user),
+        };
+
+        transporter
+          .sendMail(mailOptions)
+          .then(async () => {
+            console.log(`Email sent to ${user.email}`);
+            try {
+              await prisma.data.update({
+                where: { id: user.id },
+                data: { mailsent: true, timesent: new Date() },
+              });
+            } catch (error) {
+              console.error('Error updating mailsent:', error);
+            }
+          })
+          .catch((error) => {
+            console.error(`Error sending email to ${user.email}:`, error);
+          });
+      }
+    });
   } catch (error) {
     console.error('Error sending emails:', error);
   }
