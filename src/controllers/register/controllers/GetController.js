@@ -22,6 +22,7 @@ export class GetController {
     // create token for cookie
     const jwtToken = jwt.sign({ token }, process.env.JWT_SECRET, {});
 
+    let doesUserExist = false;
     try {
       const data = await prisma.data.findUnique({
         where: {
@@ -37,6 +38,8 @@ export class GetController {
         res.status(HttpStatus.NOT_FOUND).json({ error: 'Token not found' });
         return;
       }
+
+      doesUserExist = true;
 
       if (data.formsubmitted) {
         res
@@ -55,6 +58,7 @@ export class GetController {
     } catch (error) {
       console.log('Error getting NAME:', error);
       res.json(HttpStatus.INTERNAL_SERVER_ERROR);
+      return;
     }
 
     try {
@@ -71,6 +75,7 @@ export class GetController {
       console.log(`Link opened for person: ${data.email}`);
       sendNotificationMail(data, 'Link abierto');
     } catch (error) {
+      if (doesUserExist) return;
       console.log('Error updating linkOpened:', error);
     }
   }
