@@ -101,24 +101,11 @@ export class GetController {
         .json({ error: 'Image not found' });
     }
 
-    const searchCondition = email
-      ? {
-          OR: [
-            {
-              id: token,
-            },
-            {
-              email,
-            },
-          ],
-        }
-      : {
-          id: token,
-        };
-
     try {
       const data = await prisma.data.update({
-        where: searchCondition,
+        where: {
+          id: token,
+        },
         data: {
           mailopened: true,
           timeread: new Date(),

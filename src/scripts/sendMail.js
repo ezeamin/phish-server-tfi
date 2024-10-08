@@ -33,6 +33,40 @@ const generateHtml = (user) => `
 </main>
 `;
 
+const sendMails = async (users) => {
+  for (let i = 0; i < users.length; i += 1) {
+    const user = users[i];
+
+    const mailOptions = {
+      from: {
+        name: 'Soporte Virtual',
+        address: process.env.EMAIL_USER,
+      },
+      to: user.email,
+      subject:
+        'UNSTA - Plataforma SEO: Solicitud de restablecimiento de contraseña',
+      html: generateHtml(user),
+    };
+
+    transporter
+      .sendMail(mailOptions)
+      .then(async () => {
+        console.log(`✅ Email sent to ${user.email}`);
+        try {
+          await prisma.data.update({
+            where: { id: user.id },
+            data: { id: user.id, mailsent: true, timesent: new Date() },
+          });
+        } catch (error) {
+          console.error('Error updating mailsent:', error);
+        }
+      })
+      .catch((error) => {
+        console.error(`❌ Error sending email to ${user.email}:`, error);
+      });
+  }
+};
+
 async function main() {
   // Get "email" argument from the command line
   const emailArg = process.argv[2];
@@ -57,48 +91,15 @@ async function main() {
         ? { where: { email } }
         : {
             where: { mailsent: false },
-            take: 500,
+            take: 100,
           },
     );
 
     console.log(`People found: ${users.length}`);
 
-    transporter.on('idle', () => {
-      // send next message from the pending queue
-      while (transporter.isIdle() && users.length) {
-        const user = users.shift();
-
-        const mailOptions = {
-          from: {
-            name: 'Soporte Virtual',
-            address: process.env.EMAIL_USER,
-          },
-          to: user.email,
-          subject:
-            'UNSTA - Plataforma SEO: Solicitud de restablecimiento de contraseña',
-          html: generateHtml(user),
-        };
-
-        transporter
-          .sendMail(mailOptions)
-          .then(async () => {
-            console.log(`Email sent to ${user.email}`);
-            try {
-              await prisma.data.update({
-                where: { id: user.id },
-                data: { mailsent: true, timesent: new Date() },
-              });
-            } catch (error) {
-              console.error('Error updating mailsent:', error);
-            }
-          })
-          .catch((error) => {
-            console.error(`Error sending email to ${user.email}:`, error);
-          });
-      }
-    });
+    sendMails(users);
   } catch (error) {
-    console.error('Error sending emails:', error);
+    console.error('❌ Error sending emails:', error);
   }
 }
 
